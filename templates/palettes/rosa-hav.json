@@ -1,0 +1,19 @@
+{
+  "_navn": "Rosa hav — rosa/blågrønn palett (fra opplastet eksempel-palett)",
+  "tittel_stil": "moderne",
+  "palett": {
+    "bakgrunn": "#F9C7BE",
+    "vann": "#42899B",
+    "parker": "#94C4C1",
+    "veier": "#1B3049",
+    "jernbane": "#28405C",
+    "ramme": "#28405C",
+    "tittel": "#1B3049",
+    "markor": "#CE6A6C"
+  },
+  "font": {
+    "url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap",
+    "family": "'Inter', system-ui, sans-serif",
+    "tittel_family": "'Playfair Display', Georgia, serif"
+  }
+}

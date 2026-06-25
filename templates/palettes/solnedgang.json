@@ -1,0 +1,19 @@
+{
+  "_navn": "Solnedgang — krem med varmt oransje vann (Osaka-stil)",
+  "tittel_stil": "moderne",
+  "palett": {
+    "bakgrunn": "#F3EFE6",
+    "vann": "#E2603C",
+    "parker": "#C9B89B",
+    "veier": "#27382E",
+    "jernbane": "#27382E",
+    "ramme": "#27382E",
+    "tittel": "#27382E",
+    "markor": "#E2603C"
+  },
+  "font": {
+    "url": "https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Inter:wght@400;500&display=swap",
+    "family": "'Inter', system-ui, sans-serif",
+    "tittel_family": "'Oswald', 'Arial Narrow', sans-serif"
+  }
+}

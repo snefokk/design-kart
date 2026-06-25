@@ -1,0 +1,19 @@
+{
+  "_navn": "Midnatt blå — mørk bakgrunn, lyse gater (New Haven-stil)",
+  "tittel_stil": "moderne",
+  "palett": {
+    "bakgrunn": "#1B3A5C",
+    "vann": "#2E5779",
+    "parker": "#274E6E",
+    "veier": "#AAC4DB",
+    "jernbane": "#AAC4DB",
+    "ramme": "#F4F1E8",
+    "tittel": "#F4F1E8",
+    "markor": "#F4F1E8"
+  },
+  "font": {
+    "url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap",
+    "family": "'Inter', system-ui, sans-serif",
+    "tittel_family": "'Playfair Display', Georgia, serif"
+  }
+}

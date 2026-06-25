@@ -1,0 +1,19 @@
+{
+  "_navn": "Skandi krem — lys, rolig, sort-på-krem (Kyoto/Budapest-stil)",
+  "tittel_stil": "moderne",
+  "palett": {
+    "bakgrunn": "#F4EFE6",
+    "vann": "#B9D4D2",
+    "parker": "#D8E2CC",
+    "veier": "#3A3A3A",
+    "jernbane": "#3A3A3A",
+    "ramme": "#2C2C2C",
+    "tittel": "#1A1A1A",
+    "markor": "#C75D55"
+  },
+  "font": {
+    "url": "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap",
+    "family": "'Inter', system-ui, sans-serif",
+    "tittel_family": "'Playfair Display', Georgia, serif"
+  }
+}

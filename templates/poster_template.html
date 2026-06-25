@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="__FONT_URL__" rel="stylesheet">
+<style>
+  :root {
+    --bg: __COLOR_BG__;
+    --frame: __COLOR_FRAME__;
+    --title: __COLOR_TITLE__;
+    --marker: __COLOR_MARKER__;
+    --ui-font: __FONT_FAMILY__;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #ececec; font-family: var(--ui-font); color: #222;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center;
+    padding: 12px 18px; background: #fff; border-bottom: 1px solid #ddd;
+  }
+  .toolbar .brand { font-weight: 700; letter-spacing: .02em; }
+  .toolbar .brand small { font-weight: 400; color: #888; margin-left: 8px; }
+  .group { display: inline-flex; align-items: center; gap: 8px; }
+  .sep { flex: 1 1 100%; height: 0; }            /* tving ny rad */
+  input[type=text] {
+    font: inherit; font-size: 14px; padding: 8px 12px; border-radius: 999px;
+    border: 1px solid #ccc; min-width: 230px;
+  }
+  button, select {
+    font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--frame); background: var(--frame); color: #fff; cursor: pointer;
+  }
+  button.ghost, select { background: #fff; color: var(--frame); }
+  button:hover { opacity: .9; }
+  .seg { display: inline-flex; border: 1px solid var(--frame); border-radius: 999px; overflow: hidden; }
+  .seg button { border: 0; border-radius: 0; background: #fff; color: var(--frame); padding: 8px 14px; font-size: 16px; }
+  .seg button.active { background: var(--frame); color: #fff; }
+  label.field { font-size: 13px; color: #555; display: inline-flex; align-items: center; gap: 6px; }
+  .hint { flex: 1 1 100%; font-size: 12px; color: #888; margin-top: 2px; }
+  .hint.warn { color: #b3261e; }
+
+  .stage { display: flex; justify-content: center; padding: 28px 16px 60px; }
+  .poster-wrap { width: min(92vw, 680px); box-shadow: 0 8px 40px rgba(0,0,0,.18); background: var(--bg); }
+  .poster-svg { display: block; width: 100%; height: auto; }
+  .poster-svg[hidden] { display: none; }
+
+  @media print {
+    @page { size: auto; margin: 0; }
+    body { background: #fff; }
+    .toolbar { display: none !important; }
+    .stage { padding: 0; }
+    .poster-wrap { width: 100%; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="group brand">__STED__ <small>design-kart-dittsted</small></div>
+  <div class="sep"></div>
+
+  <div class="group">
+    <input type="text" id="addr" placeholder="Skriv inn adressen din …" autocomplete="off">
+    <button id="set-addr">Sett av på kartet</button>
+    <div class="seg" id="marker-type" title="Velg symbol">
+      <button data-type="hjerte" class="active">♥</button>
+      <button data-type="stjerne">★</button>
+    </div>
+    <button class="ghost" id="clear-addr" hidden>Fjern</button>
+  </div>
+  <div class="sep"></div>
+
+  <label class="field">Størrelse
+    <select id="size">
+      <optgroup label="Stående" id="grp-portrait">
+        <option value="30x40"   data-ratio="3:4">30 × 40 cm</option>
+        <option value="50x70"   data-ratio="5:7" selected>50 × 70 cm</option>
+        <option value="70x100"  data-ratio="7:10">70 × 100 cm</option>
+        <option value="100x140" data-ratio="5:7">100 × 140 cm</option>
+      </optgroup>
+      <optgroup label="Liggende" id="grp-landscape">
+        <option value="40x30"   data-ratio="4:3">40 × 30 cm</option>
+        <option value="70x50"   data-ratio="7:5">70 × 50 cm</option>
+        <option value="100x70"  data-ratio="10:7">100 × 70 cm</option>
+        <option value="140x100" data-ratio="7:5">140 × 100 cm</option>
+      </optgroup>
+    </select>
+  </label>
+  <label class="field">DPI
+    <select id="dpi">
+      <option value="96">96</option>
+      <option value="150" selected>150</option>
+      <option value="300">300</option>
+    </select>
+  </label>
+  <button class="ghost" id="dl-svg">Last ned SVG</button>
+  <button id="dl-png">Last ned PNG</button>
+  <button class="ghost" id="print">Print / PDF</button>
+  <div class="hint" id="hint">Skriv inn adressen din for å sette av et hjerte eller en stjerne. SVG er skarpt i alle størrelser — beste fil til trykkeri.</div>
+</div>
+
+<div class="stage">
+  <div class="poster-wrap" id="wrap">
+__SVGS__
+  </div>
+</div>
+
+<script>
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const CONFIG = __CONFIG_JSON__;
+  const METAS  = __METAS_JSON__;                       // én per format (ratio)
+  const TOWN_ASPECT = __TOWN_ASPECT__;                 // bredde/høyde på bakken
+  const ANBEFALT = '__ANBEFALT_ORIENTERING__';         // "liggende" | "staaende" | "begge"
+  const MARKER_COLOR = '__COLOR_MARKER__';
+  const OUTLINE = (CONFIG.palett && CONFIG.palett.bakgrunn) || '#ffffff';
+
+  const MARKER_PATHS = {
+    hjerte: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
+    stjerne: "M12 2l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.77l-5.88 3.09 1.12-6.55-4.76-4.64 6.58-.96L12 2z"
+  };
+  const MARKER_ANCHOR = { hjerte: 21.35, stjerne: 12 };
+
+  const sted = (CONFIG.sted || "kart").toString().toLowerCase()
+                .replace(/[æ]/g,'ae').replace(/[ø]/g,'o').replace(/[å]/g,'a')
+                .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || "kart";
+
+  // Tilstand
+  let markerType = 'hjerte';
+  let address = null;            // { lat, lon }
+  let activeRatio = document.getElementById('size').selectedOptions[0].dataset.ratio;
+
+  const svgs = [...document.querySelectorAll('.poster-svg')];
+  function metaFor(ratio) { return METAS.find(m => m.ratio === ratio); }
+  function activeSvg() { return svgs.find(s => s.dataset.ratio === activeRatio); }
+
+  function showActive() {
+    // NB: SVG-elementer reflekterer ikke .hidden-egenskapen → bruk attributtet.
+    svgs.forEach(s => {
+      if (s.dataset.ratio === activeRatio) s.removeAttribute('hidden');
+      else s.setAttribute('hidden', '');
+    });
+  }
+
+  function project(meta, lat, lon) {
+    const mx = lon * Math.PI / 180;
+    const my = Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+    return {
+      x: (mx - meta.proj.mx0) * meta.proj.scale + meta.proj.map_x,
+      y: (meta.proj.myt - my) * meta.proj.scale + meta.proj.map_y
+    };
+  }
+
+  function markerGroup(type, mx, my, size) {
+    const path = MARKER_PATHS[type] || MARKER_PATHS.hjerte;
+    const anchor = MARKER_ANCHOR[type] || 12;
+    const sc = size / 24, ow = Math.max(0.8, size * 0.05);
+    const g = document.createElementNS(SVGNS, 'g');
+    g.setAttribute('class', 'addr-marker');
+    g.setAttribute('transform', `translate(${(mx - 12 * sc).toFixed(2)},${(my - anchor * sc).toFixed(2)}) scale(${sc.toFixed(4)})`);
+    const p = document.createElementNS(SVGNS, 'path');
+    p.setAttribute('d', path);
+    p.setAttribute('fill', MARKER_COLOR);
+    p.setAttribute('stroke', OUTLINE);
+    p.setAttribute('stroke-width', (ow / sc).toFixed(2));
+    p.setAttribute('stroke-linejoin', 'round');
+    g.appendChild(p);
+    return g;
+  }
+
+  // Tegn (eller fjern) markøren i ALLE format-SVG-er, så bytte beholder den.
+  function renderMarker() {
+    svgs.forEach(svg => {
+      const layer = svg.querySelector('.user-markers');
+      if (!layer) return;
+      layer.replaceChildren();
+      if (!address) return;
+      const meta = metaFor(svg.dataset.ratio);
+      const { x, y } = project(meta, address.lat, address.lon);
+      const c = meta.mapclip;
+      if (x < c.x || x > c.x + c.w || y < c.y || y > c.y + c.h) return;  // utenfor utsnitt
+      layer.appendChild(markerGroup(markerType, x, y, meta.marker_storrelse || 30));
+    });
+  }
+
+  function setHint(msg, warn) {
+    const h = document.getElementById('hint');
+    h.textContent = msg;
+    h.classList.toggle('warn', !!warn);
+  }
+
+  // Hvilke størrelser inneholder punktet? Sortert slik at det formatet der
+  // adressen ligger mest sentralt (størst margin til kanten) kommer først.
+  function sizesContaining(lat, lon) {
+    const opts = [...document.querySelectorAll('#size option')];
+    const ok = [];
+    for (const o of opts) {
+      const meta = metaFor(o.dataset.ratio);
+      const { x, y } = project(meta, lat, lon);
+      const c = meta.mapclip;
+      const m = Math.min(x - c.x, c.x + c.w - x, y - c.y, c.y + c.h - y) / Math.min(c.w, c.h);
+      if (m >= 0) ok.push({ o, m });
+    }
+    ok.sort((a, b) => b.m - a.m);
+    return ok.map(r => r.o);
+  }
+
+  // ---- Adresse-geokoding (Nominatim, begrenset til kartområdet) ----
+  async function geocode(q) {
+    const bb = METAS[0].bbox;                  // [s, w, n, e]
+    const params = new URLSearchParams({
+      q: q, format: 'json', limit: '1',
+      viewbox: `${bb[1]},${bb[2]},${bb[3]},${bb[0]}`,  // west,north,east,south
+      bounded: '1'
+    });
+    const res = await fetch('https://nominatim.openstreetmap.org/search?' + params, {
+      headers: { 'Accept': 'application/json' }
+    });
+    const data = await res.json();
+    return data && data[0] ? { lat: +data[0].lat, lon: +data[0].lon } : null;
+  }
+
+  document.getElementById('set-addr').addEventListener('click', async () => {
+    const q = document.getElementById('addr').value.trim();
+    if (!q) { setHint('Skriv inn en adresse først.', true); return; }
+    const btn = document.getElementById('set-addr');
+    const old = btn.textContent; btn.textContent = 'Søker …'; btn.disabled = true;
+    try {
+      const hit = await geocode(q);
+      if (!hit) { setHint('Fant ikke adressen i kartområdet. Prøv «gate husnr, ' + (CONFIG.sted||'') + '».', true); return; }
+      address = hit;
+      renderMarker();
+      document.getElementById('clear-addr').hidden = false;
+      if (activeSvg().querySelector('.addr-marker')) {
+        setHint('Markør satt. Bytt symbol med ♥/★, velg størrelse og last ned.');
+      } else {
+        const fits = sizesContaining(address.lat, address.lon);
+        if (fits.length) {
+          setHint('Adressen ligger i utkanten — velg ' + fits[0].textContent.trim() +
+                  ' for å få den med på plakaten.', true);
+        } else {
+          setHint('Adressen ligger utenfor kartområdet for dette stedet.', true);
+        }
+      }
+    } catch (e) {
+      setHint('Klarte ikke å søke akkurat nå (' + e + '). Prøv igjen.', true);
+    } finally { btn.textContent = old; btn.disabled = false; }
+  });
+
+  document.getElementById('addr').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('set-addr').click();
+  });
+
+  document.getElementById('clear-addr').addEventListener('click', () => {
+    address = null; renderMarker();
+    document.getElementById('clear-addr').hidden = true;
+    setHint('Markør fjernet.');
+  });
+
+  document.getElementById('marker-type').addEventListener('click', e => {
+    const b = e.target.closest('button[data-type]'); if (!b) return;
+    markerType = b.dataset.type;
+    [...e.currentTarget.children].forEach(c => c.classList.toggle('active', c === b));
+    renderMarker();
+  });
+
+  document.getElementById('size').addEventListener('change', e => {
+    activeRatio = e.target.selectedOptions[0].dataset.ratio;
+    showActive(); renderMarker();
+    if (address && !activeSvg().querySelector('.addr-marker')) {
+      const fits = sizesContaining(address.lat, address.lon);
+      setHint(fits.length
+        ? 'Adressen får ikke plass i denne størrelsen — velg ' + fits[0].textContent.trim() + '.'
+        : 'Adressen ligger utenfor kartområdet for dette stedet.', true);
+    }
+  });
+
+  // ---- Skrift-innbygging (selvstendig SVG/PNG, riktig typografi) ----
+  function abToB64(buf) {
+    let bin = ''; const bytes = new Uint8Array(buf); const chunk = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunk)
+      bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    return btoa(bin);
+  }
+  let _fontCss = null;
+  async function embeddedFontCss() {
+    if (_fontCss !== null) return _fontCss;
+    _fontCss = '';
+    const url = CONFIG.font && CONFIG.font.url;
+    if (!url) return _fontCss;
+    try {
+      let css = await (await fetch(url)).text();
+      const urls = [...new Set([...css.matchAll(/url\((https:\/\/[^)]+)\)/g)].map(m => m[1]))];
+      for (const u of urls) {
+        const buf = await (await fetch(u)).arrayBuffer();
+        const fmt = u.includes('.woff2') ? 'woff2' : u.includes('.woff') ? 'woff' : 'truetype';
+        css = css.split(u).join('data:font/' + fmt + ';base64,' + abToB64(buf));
+      }
+      _fontCss = css;
+    } catch (e) {
+      _fontCss = '';
+      setHint('Klarte ikke bygge inn skriften; bruker systemfont i nedlastingen.', true);
+    }
+    return _fontCss;
+  }
+
+  async function svgString() {
+    const svg = activeSvg().cloneNode(true);
+    svg.removeAttribute('hidden');
+    svg.setAttribute('xmlns', SVGNS);
+    const css = await embeddedFontCss();
+    if (css) {
+      const style = document.createElementNS(SVGNS, 'style');
+      style.textContent = css;
+      svg.insertBefore(style, svg.firstChild);
+    }
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(svg);
+  }
+
+  function download(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  document.getElementById('print').addEventListener('click', () => window.print());
+
+  document.getElementById('dl-svg').addEventListener('click', async () => {
+    const btn = document.getElementById('dl-svg');
+    const old = btn.textContent; btn.textContent = 'Gjør klar …'; btn.disabled = true;
+    try {
+      download(new Blob([await svgString()], { type: 'image/svg+xml' }),
+               sted + '-' + document.getElementById('size').value + '.svg');
+    } finally { btn.textContent = old; btn.disabled = false; }
+  });
+
+  document.getElementById('dl-png').addEventListener('click', async () => {
+    const [wcm, hcm] = document.getElementById('size').value.split('x').map(Number);
+    const dpi = Number(document.getElementById('dpi').value);
+    const vb = activeSvg().viewBox.baseVal;
+    const posterAR = vb.width / vb.height;
+    let pxW = Math.round(wcm / 2.54 * dpi);
+    let pxH = Math.round(hcm / 2.54 * dpi);
+    if (pxW / pxH > posterAR) pxW = Math.round(pxH * posterAR);
+    else pxH = Math.round(pxW / posterAR);
+
+    const MAXDIM = 16384;
+    if (pxW > MAXDIM || pxH > MAXDIM) {
+      const k = MAXDIM / Math.max(pxW, pxH);
+      pxW = Math.floor(pxW * k); pxH = Math.floor(pxH * k);
+      setHint('For stort for nettleser-PNG på denne DPI-en — skalert til ' + pxW + '×' + pxH + ' px. Bruk SVG for full trykkstørrelse.', true);
+    }
+
+    const btn = document.getElementById('dl-png');
+    const old = btn.textContent; btn.textContent = 'Lager PNG …'; btn.disabled = true;
+    try {
+      const url = URL.createObjectURL(new Blob([await svgString()], { type: 'image/svg+xml;charset=utf-8' }));
+      const img = new Image();
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+      const canvas = document.createElement('canvas');
+      canvas.width = pxW; canvas.height = pxH;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg') || '#fff';
+      ctx.fillRect(0, 0, pxW, pxH);
+      ctx.drawImage(img, 0, 0, pxW, pxH);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(b => download(b, sted + '-' + wcm + 'x' + hcm + 'cm-' + pxW + 'px.png'), 'image/png');
+    } catch (e) {
+      setHint('Kunne ikke lage PNG (' + e + '). Last ned SVG i stedet.', true);
+    } finally { btn.textContent = old; btn.disabled = false; }
+  });
+
+  function ratioVal(r) { const [a, b] = r.split(':').map(Number); return a / b; }
+
+  // Init: behold bare størrelser for de orienteringene som faktisk er bygd, og
+  // forhåndsvelg den størrelsen som passer tettstedets form best.
+  (function initOrientation() {
+    const sel = document.getElementById('size');
+    const avail = new Set(METAS.map(m => m.ratio));
+    // fjern størrelser for ikke-bygde format, og skjul tomme grupper
+    sel.querySelectorAll('option').forEach(o => { if (!avail.has(o.dataset.ratio)) o.remove(); });
+    sel.querySelectorAll('optgroup').forEach(g => { if (!g.querySelector('option')) g.hidden = true; });
+
+    // standardvalg: foretrekk den ikoniske portrett-50×70 (plakat-konvensjon),
+    // ellers liggende 70×50, ellers størrelsen hvis forhold er nærmest formen.
+    const opts = [...sel.querySelectorAll('option')];
+    let best = opts.find(o => o.value === '50x70') || opts.find(o => o.value === '70x50');
+    if (!best) {
+      best = opts[0]; let bestd = Infinity;
+      for (const o of opts) {
+        const d = Math.abs(ratioVal(o.dataset.ratio) - TOWN_ASPECT);
+        if (d < bestd) { bestd = d; best = o; }
+      }
+    }
+    sel.value = best.value;
+    activeRatio = best.dataset.ratio;
+
+    if (ANBEFALT === 'liggende')
+      setHint('Tettstedet er langstrakt, så plakaten er i liggende format — hele stedet er med. Skriv inn adressen din for å sette av et hjerte eller en stjerne.');
+    else if (ANBEFALT === 'begge')
+      setHint('Tettstedet er nokså kvadratisk, så du kan velge både stående og liggende i nedtrekket. Skriv inn adressen din for å sette av et hjerte eller en stjerne.');
+    else
+      setHint('Skriv inn adressen din for å sette av et hjerte eller en stjerne. Hele tettstedet er med, og plakaten fyller en standardramme.');
+
+    showActive();
+  })();
+</script>
+</body>
+</html>

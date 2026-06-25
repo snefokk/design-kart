@@ -1,0 +1,19 @@
+{
+  "_navn": "Snefokk husstil — krem med lilla aksent (Newsreader + Inter)",
+  "tittel_stil": "moderne",
+  "palett": {
+    "bakgrunn": "#F3EEEA",
+    "vann": "#C9B7D4",
+    "parker": "#D8D0C4",
+    "veier": "#1A1A1A",
+    "jernbane": "#1A1A1A",
+    "ramme": "#3D1F4D",
+    "tittel": "#3D1F4D",
+    "markor": "#3D1F4D"
+  },
+  "font": {
+    "url": "https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Inter:wght@400;500&display=swap",
+    "family": "'Inter', system-ui, sans-serif",
+    "tittel_family": "'Newsreader', Georgia, serif"
+  }
+}
