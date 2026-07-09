@@ -5,8 +5,8 @@ kule bykart-plakatene for storbyer, men for stedene som ellers ikke har slike ka
 AI, klart til print, med din egen adresse markert med et hjerte eller en stjerne.
 
 > **Vil du heller at vi lager plakaten for deg?**
-> Bestill et ferdig kart på **[snefokk.com/kart](https://snefokk.com/kart)** — så bygger
-> Snefokk det, tilpasser farger og typografi, og leverer trykkeklar fil. Dette repoet er for
+> Bestill en ferdig plakat på **[snefokk.com/designet-bykart](https://snefokk.com/designet-bykart)** — så
+> bygger Snefokk den, tilpasser farger og typografi, og leverer trykkeklar fil. Dette repoet er for
 > deg som vil gjøre jobben selv, gratis.
 
 ## Hva skillen lager
@@ -28,6 +28,14 @@ Kartdataene hentes fra **OpenStreetMap**. Ingen kartnøkkel, ingen `pip install`
 - Folk på små steder som vil ha et stilig kart over hjembyen på veggen
 - Gaver: en plakat med «hjemme» markert med et hjerte
 - Hytteeiere, tilflyttere, lokalpatrioter — og bedrifter som vil ha stedet sitt på veggen
+
+## To måter å få plakaten
+
+| Gjør det selv (dette repoet) | La Snefokk gjøre jobben |
+| --- | --- |
+| Gratis — krever et Claude-abonnement | Bestill på **[snefokk.com/designet-bykart](https://snefokk.com/designet-bykart)** |
+| Du kjører skillen selv i Claude Cowork — bygg så mange plakater du vil | Snefokk designer plakaten, tilpasser farger og format, og leverer trykkeklar fil, med én tilbakemeldingsrunde |
+| **Ferdig på ~15 minutter** (med god internettforbindelse) | **Klart innen typisk en uke** |
 
 ## Slik virker det
 
@@ -80,6 +88,14 @@ python3 scripts/build_poster.py \
 
 `by-kart-bygger` lager A4-**turistkart** med bedrifter/severdigheter over rasterfliser. Denne
 skillen lager en **designplakat** som vektor, for veggen. Bruk den som passer behovet.
+
+## Eksempler
+
+Prøv en ferdig plakat live — søk opp en adresse, sett et hjerte, og last ned eller print:
+
+- [Berlevåg](https://kart.snefokk.com/plakat/berlevag/)
+- [Alta](https://kart.snefokk.com/plakat/alta/)
+- [Trondheim](https://kart.snefokk.com/plakat/trondheim/)
 
 ## Data og lisens
 
