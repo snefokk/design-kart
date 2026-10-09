@@ -93,9 +93,9 @@ skillen lager en **designplakat** som vektor, for veggen. Bruk den som passer be
 
 Prøv en ferdig plakat live — søk opp en adresse, sett et hjerte, og last ned eller print:
 
-- [Berlevåg](https://kart.snefokk.com/plakat/berlevag/)
-- [Alta](https://kart.snefokk.com/plakat/alta/)
-- [Trondheim](https://kart.snefokk.com/plakat/trondheim/)
+- [Berlevåg](https://snefokk.com/kart/plakat/berlevag/)
+- [Alta](https://snefokk.com/kart/plakat/alta/)
+- [Trondheim](https://snefokk.com/kart/plakat/trondheim/)
 
 ## Data og lisens
 

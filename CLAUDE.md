@@ -196,7 +196,8 @@ stroke instead.
 ### Template runtime features (poster_template.html)
 
 The output is an **interactive, self-contained page** — built to be hosted (e.g. at
-`kart.snefokk.com/plakat/<sted>`). It needs no server; just drop the HTML at that path.
+`snefokk.com/kart/plakat/<sted>`). It needs no server; just drop the HTML at that path
+(in the `snefokk-com` repo: `src/kart/plakat/<sted>/index.html`).
 
 - **Address marking** — the visitor types an address; it is geocoded via Nominatim (biased to
   the map bbox with `bounded=1`) and a heart/star marker is placed client-side, in `markor`

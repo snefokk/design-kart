@@ -47,5 +47,5 @@ python3 scripts/build_poster.py \
 - [ ] Tittel og koordinater lesbare
 
 ## 8. Lever / host
-- [ ] Legg HTML-en på `kart.snefokk.com/plakat/<sted>`
+- [ ] Legg HTML-en på `snefokk.com/kart/plakat/<sted>` (i snefokk-com-repoet: `src/kart/plakat/<sted>/index.html`)
 - [ ] Forklar SVG (trykkeri), PNG (størrelse + DPI), Print/PDF; SVG for trykk > ~70 cm
