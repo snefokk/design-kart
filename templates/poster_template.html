@@ -29,6 +29,8 @@
   }
   .toolbar .brand { font-weight: 700; letter-spacing: .02em; }
   .toolbar .brand small { font-weight: 400; color: #888; margin-left: 8px; }
+  .toolbar .back-link { color: #1a1a1a; font-size: 14px; font-weight: 500; text-decoration: none; margin-right: 6px; }
+  .toolbar .back-link:hover { text-decoration: underline; }
   .group { display: inline-flex; align-items: center; gap: 8px; }
   .sep { flex: 1 1 100%; height: 0; }            /* tving ny rad */
   input[type=text] {
@@ -117,6 +119,14 @@ __SVGS__
 <script>
   const SVGNS = 'http://www.w3.org/2000/svg';
   const CONFIG = __CONFIG_JSON__;
+  if (CONFIG.tilbake_url) {
+    const back = document.createElement('a');
+    back.className = 'back-link';
+    back.href = CONFIG.tilbake_url;
+    back.textContent = CONFIG.tilbake_tekst || '\u2190 Tilbake';
+    const tb = document.querySelector('.toolbar');
+    tb.insertBefore(back, tb.firstChild);
+  }
   const METAS  = __METAS_JSON__;                       // én per format (ratio)
   const TOWN_ASPECT = __TOWN_ASPECT__;                 // bredde/høyde på bakken
   const ANBEFALT = '__ANBEFALT_ORIENTERING__';         // "liggende" | "staaende" | "begge"

@@ -180,6 +180,7 @@ Lag en `config.json` (se full struktur i `CLAUDE.md`). Minimum (hostet side):
 - **Format:** `"formater": ["3:4","5:7","7:10"]` er standard; endre bare ved behov.
 - `fyll_hav` (standard `true`) fyller sjøen fra kystlinjen. Sett `false` for innlandssteder
   eller hvis havfyllet ser feil ut (sjelden — det har en innebygd fail-safe).
+- **Tilbake-lenke:** `"tilbake_url": "/"` (og valgfritt `"tilbake_tekst": "← Alle kart"`) legger en lenke først i verktøylinjen — for plakater som ligger i en oversikt, som kart.snefokk.com. Utelatt som standard; skjules i utskrift sammen med verktøylinjen.
 - `vei_skala` (standard `1.0`) skalerer alle strektykkelser. Tynt kart → 1.2–1.5; rotete →
   0.7–0.9.
 
