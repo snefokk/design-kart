@@ -11,7 +11,7 @@ adresse, og en tittelblokk med stedsnavn + koordinater nederst — slik de popul
 plakatene for storbyer ser ut, men for små steder som ellers ikke har slike kart.
 
 Output er en **selvstendig, interaktiv HTML-side** (bygd for å hostes, f.eks. på
-`kart.snefokk.com/plakat/<sted>`). I siden kan en besøkende:
+`snefokk.com/kart/plakat/<sted>`). I siden kan en besøkende:
 - **skrive inn adressen sin** → den geokodes og et hjerte/en stjerne settes på kartet,
 - **velge plakatstørrelse** blant vanlige rammeformat (30×40, 50×70, 70×100 …),
 - laste ned som **SVG** (vektor — knivskarpt i alle størrelser, beste fil til trykkeri),
@@ -60,7 +60,7 @@ brukerens workspace.
 5. Bygg config.json
 6. Bygg plakaten   →  build_poster.py → interaktiv HTML (flere format)
 7. Visuell kontroll →  åpne i nettleser, test adresse-input + format, juster
-8. Lever / host    →  legg HTML-en på kart.snefokk.com/plakat/<sted>
+8. Lever / host    →  legg HTML-en på snefokk.com/kart/plakat/<sted>
 ```
 
 ---
@@ -73,7 +73,7 @@ Avklar kort (gjerne med AskUserQuestion):
 - **Hostet side eller ferdigmarkert gave?**
   - *Hostet side* (standard): besøkende skriver inn sin egen adresse og velger størrelse i
     siden. Du baker **ingen** markør inn — det gjøres interaktivt. Siden legges på
-    `kart.snefokk.com/plakat/<sted>`.
+    `snefokk.com/kart/plakat/<sted>`.
   - *Ferdigmarkert gave*: du setter selv av én adresse (hjerte/stjerne) i config-en før bygging.
 - **Orientering velges automatisk** (kodet regel): kartet rammer inn **hele tettstedet** og
   zoomer ut så alle adresser får plass. **Stående er standard** (som plakat-eksemplene); kun
@@ -180,7 +180,7 @@ Lag en `config.json` (se full struktur i `CLAUDE.md`). Minimum (hostet side):
 - **Format:** `"formater": ["3:4","5:7","7:10"]` er standard; endre bare ved behov.
 - `fyll_hav` (standard `true`) fyller sjøen fra kystlinjen. Sett `false` for innlandssteder
   eller hvis havfyllet ser feil ut (sjelden — det har en innebygd fail-safe).
-- **Tilbake-lenke:** `"tilbake_url": "/"` (og valgfritt `"tilbake_tekst": "← Alle kart"`) legger en lenke først i verktøylinjen — for plakater som ligger i en oversikt, som kart.snefokk.com. Utelatt som standard; skjules i utskrift sammen med verktøylinjen.
+- **Tilbake-lenke:** `"tilbake_url": "/designet-bykart/"` (og valgfritt `"tilbake_tekst": "← Designet bykart"`) legger en lenke først i verktøylinjen — for plakater som ligger under en produktside eller oversikt, som `snefokk.com/kart/plakat/`. Utelatt som standard; skjules i utskrift sammen med verktøylinjen.
 - `vei_skala` (standard `1.0`) skalerer alle strektykkelser. Tynt kart → 1.2–1.5; rotete →
   0.7–0.9.
 
@@ -213,8 +213,9 @@ Juster config/parametre og bygg om til det sitter.
 ## Trinn 8 — Lever / host
 
 Siden er en **selvstendig statisk HTML-fil**. For et hostet plakat-produkt: legg fila på
-`kart.snefokk.com/plakat/<sted>` (krever ingen server). Du kan ikke publisere til serveren fra
-skillen — lever fila, så laster brukeren den opp dit.
+`snefokk.com/kart/plakat/<sted>` (krever ingen server): i `snefokk-com`-repoet som
+`src/kart/plakat/<sted>/index.html` (kopieres urørt ved bygging). Du kan ikke publisere til
+nettstedet fra skillen — lever fila, så legger brukeren den inn der.
 
 Forklar besøker-flyten i siden:
 
